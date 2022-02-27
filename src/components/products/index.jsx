@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useGlobalFilter, useSortBy, useTable } from "react-table";
 import tw from "twin.macro";
 import { GlobalFilter } from "./globalFilter";
+import Loading from "../../utils/loading.js";
 
 const Table = tw.table`
   table-fixed
@@ -40,19 +41,25 @@ p-5
 `;
 
 export function Products(props) {
+  const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState([]);
 
   const fetchProducts = async () => {
+    setLoading(true);
+
     const response = await axios
       // .get("https://api.publicapis.org/entries")
       .get("https://fakestoreapi.com/products")
       .catch((err) => console.log(err));
 
     if (response) {
+      setLoading(false);
       const products = response.data;
 
-      console.log("Products: ", products.entries);
-      setProducts(products.entries);
+      console.log("Products: ", products);
+      setProducts(products);
+      // console.log("Products: ", products.entries);
+      // setProducts(products.entries);
     }
   };
 
@@ -170,7 +177,15 @@ export function Products(props) {
     fetchProducts();
   }, []);
 
-  const isEven = (idx) => idx % 2 === 0;
+  // const isEven = (idx) => idx % 2 === 0;
+
+  if (loading) {
+    return (
+      <main>
+        <Loading />
+      </main>
+    );
+  }
 
   return (
     <>
